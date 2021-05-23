@@ -2,12 +2,12 @@ import React from 'react';
 import CommandRunner from './emulator/command-runner';
 import { connect } from 'react-redux';
 import { getCommands } from './parser/command-parser';
-import { doPromptOutput } from './terminal-output/output';
+import output from './terminal-output';
 import { promptPrefix } from './config';
 
 import basic from './themes/basic'
 
-function Terminal({onInputChange, onKeyPressed, userInput, history, commandHistory, themes}) {
+function Terminal({onInputChange, onKeyPressed, userInput, history, commandHistory, themes, commands}) {
   const inputField = React.createRef();
   const theme = themes ? themes : basic;
   return(
@@ -19,7 +19,7 @@ function Terminal({onInputChange, onKeyPressed, userInput, history, commandHisto
           ))}
           <div className="input-area" style={{...theme.inputArea}}>
             <span className="prompt" style={{...theme.prompt}}>{promptPrefix}</span>
-            <input ref={inputField} className="input" style={{...theme.input}} onChange={onInputChange} onKeyDown={(e) => { onKeyPressed(e, commandHistory) } } value={userInput} />
+            <input ref={inputField} className="input" style={{...theme.input}} onChange={onInputChange} onKeyDown={(e) => { onKeyPressed(e, commandHistory, commands) } } value={userInput} />
           </div>
         </div>
       </div>
@@ -36,8 +36,6 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  const runner = new CommandRunner();
-
   let cmd_index = 0;
   let cmd_offset_index = -1;
 
@@ -49,12 +47,13 @@ function mapDispatchToProps(dispatch) {
       }
       dispatch(action);
     },
-    onKeyPressed: (e, commandHistory) => {
+    onKeyPressed: (e, commandHistory, commands) => {
       switch(e.key) {
         case 'Enter':
           cmd_index = 0;
+          const runner = new CommandRunner(commands);
           const response = runner.exec(getCommands(e.target.value));
-          const result = [doPromptOutput(e.target.value)]; // [{}, {}]
+          const result = [output.doPromptOutput(e.target.value)]; // [{}, {}]
           if (response) {
             result.push(response);
           }

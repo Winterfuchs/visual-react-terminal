@@ -1,10 +1,10 @@
 import { createStore } from 'redux';
-import { doInfoOutput } from '../terminal-output/output'
+import output from '../terminal-output'
 import { startupMessage } from '../config'
 
 const initialState = {
   userInput: '',
-  history: [doInfoOutput(...startupMessage)],
+  history: [output.doInfoOutput(...startupMessage)],
   commandHistory: [],
 };
 

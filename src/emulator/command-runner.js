@@ -1,9 +1,8 @@
-import { doErrorOutput } from '../terminal-output/output';
-import { cmdList } from './command-list';
+import output from '../terminal-output';
 
 export default class CommandRunner {
-  constructor(params) {
-    this.commands = cmdList;
+  constructor(commands) {
+    this.commands = commands;
   }
 
   exec(commands) {
@@ -15,7 +14,7 @@ export default class CommandRunner {
           const cmd = new func();
           response = cmd.run(params);
         } else if(element.command !== '') {
-          response = doErrorOutput('Emulator: Command \'' + element.command + '\' not found.');
+          response = output.doErrorOutput('Emulator: Command \'' + element.command + '\' not found.');
         }
     });
     return response;
